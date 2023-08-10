@@ -1,0 +1,99 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@*<main>
+        <section class="row" aria-labelledby="aspnetTitle">
+            <h1 id="title">ASP.NET</h1>
+            <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+            <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
+        </section>
+
+        <div class="row">
+            <section class="col-md-4" aria-labelledby="gettingStartedTitle">
+                <h2 id="gettingStartedTitle">Getting started</h2>
+                <p>
+                    ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
+                    enables a clean separation of concerns and gives you full control over markup
+                    for enjoyable, agile development.
+                </p>
+                <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+            </section>
+            <section class="col-md-4" aria-labelledby="librariesTitle">
+                <h2 id="librariesTitle">Get more libraries</h2>
+                <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
+                <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+            </section>
+            <section class="col-md-4" aria-labelledby="hostingTitle">
+                <h2 id="hostingTitle">Web Hosting</h2>
+                <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
+                <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+            </section>
+        </div>
+    </main>*@
+<br />
+<br />
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <input type="text" class="form-control" id="mensaje" />
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-12">
+            <input type="text" class="btn btn-success" id="mensajee" value="Enviar" />
+
+        </div>
+    </div>
+    <br />
+    <h3> ADSO Mensajitos</h3>
+    <div class="row">
+        <ul id="discussion">
+        </ul>
+    </div>
+</div>
+<br />
+<input type="hidden" id="nombree" /> <!--Este es un elemento oculto-->
+
+
+@section scripts{
+
+    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+    <script src="/signalr/hubs"></script> <!-- Esta se hace virtuar para el cliente en el momento que la llamo Esta no existe se va a crear en el momento cargandose despues de jquery-->
+    <script type="text/javascript">
+        $(function () {
+
+            var chat = $.connection.chatLinea //importante poner en minuscula chatHub en ves de mayuscula por el javascript tiene como regla el ovelqueis  en caso de c# las nomenclaturas es en camelqueis
+
+            //Este bloque seria cuando recibe
+            chat.client.chatmaria = function (nombre, mensaje) { //esto se va a ejecutar cuando reciba el mensaje y se ejecute el clients de la clase MyHub1 y cuando lo recibe hacemos lo siguente
+
+                var divnombre = $("<div />").text(nombre).html();  //Vamos a crear unos elementos tipo divnombre que sean igual al texto que tiene el nombre
+                var divmensaje = $("<div />").text(mensaje).html(); // ya teniendo los dos elementos
+
+                $("#discussion").append("<li><strong>" + divnombre + "<strong>" + divmensaje + "</li>");//Cada ves que reciba eso entonces vamos a ir copiando en nuestro discussion
+            };
+
+            //aca vamos a crear una ventana para que se habra como por primera ves
+            var nombreusu = prompt("Escribe tu nombre: ", " "); //aca le esta pidiendo el nombre para poder verificar cual es el usuario en linea
+            $("#nombree").val(nombreusu); //la vamos a guardar en nombreusu
+
+            $("#mensaje").focus();
+
+            $.connection.hub.start().done(function () { //Esto inicia la conexion y si esta todo bien se hace la funcionalidad del boton
+
+                $("#mensajee").click(function () {//cuando el usuario le da click al boton se envie a la caja de texto
+
+                    var nombreusu = $("#nombree").val(); // aca tenemos el nombre de la persona que ingresa
+                    var textMensaje = $("#mensaje").val(); //para que salga el mensaje y asi mismo lo guarde
+
+                    chat.server.chat(nombreusu, textMensaje) // aca taremos el los paremetros de hub
+
+                    $("#mensaje").val("").focus(); // que el mensaje en la caja de texto se borre lo que se escribio en la caja de arriba y se escriba el nuevo mensaje
+                })
+
+            })
+        })
+    </script>
+}
